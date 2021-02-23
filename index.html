@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vetapp</title>
+</head>
+<body>
+<form id="forms">
+    <label for="username">Username
+        <input value="Yacin Martha" id="username" type="text" name="username" />
+    </label>
+    <label for="email">Email
+        <input value="yacinmarthe1994@gmail.com" id="email" type="text" name="email" />
+    </label>
+    <label for="password">Password
+        <input value="password" id="password" type="text" name="password" />
+    </label>
+    <button>Submit</button>
+</form>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+<script type="text/javascript">
+
+    // id of your form, with prefix # for jquery
+    var formId = "#wf-form-Email-Form";
+    var button = document.getElementById('register');
+
+    makeWebflowFormAjax = function() {
+        var form = $(formId);
+        form.on("submit", function (event) {
+            var container = form.parent();
+            var doneBlock = $(".w-form-done", container);
+            var failBlock = $(".w-form-fail", container);
+            var action = form.attr("action");
+            var method = form.attr("method");
+
+            // collect data from form inputs, you need to change according to you form input and it's ids.
+            var data = {
+                'email': $("#email").val(),
+                'username': $("#username").val(),
+                'password': $("#password").val()
+            };
+
+            // call via ajax
+            $.ajax({
+                type: method,
+                url: action,
+                cors: true,
+                contentType: 'application/json',
+                dataType: 'json',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify(data),
+                success: function (resultData) {
+                    if (typeof successCallback === 'function') {
+                        // call custom callback
+                        result = successCallback(resultData);
+                        if (!result) {
+                            // show error (fail) block
+                            form.show();
+                            doneBlock.hide();
+                            failBlock.show();
+                            console.log(e);
+                            return;
+                        }
+                    }
+                    // show success (done) block
+                    form.hide();
+                    doneBlock.show();
+                    failBlock.hide();
+                },
+                error: function (e) {
+                    // call custom callback
+                    if (typeof errorCallback === 'function') {
+                        errorCallback(e)
+                    }
+                    // show error (fail) block
+                    form.show();
+                    doneBlock.hide();
+                    failBlock.show();
+                    console.log(e);
+                }
+            });
+            // prevent default webdlow action
+            event.preventDefault();
+            return false;
+        });
+    }
+
+    button.onclick = makeWebflowFormAjax();
+
+</script>
+</html>
